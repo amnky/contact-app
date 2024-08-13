@@ -2,13 +2,11 @@ package com.techlabs.controller;
 
 import com.techlabs.dto.ContactDTO;
 import com.techlabs.dto.ContactResponseDTO;
-import com.techlabs.security.ContactService;
+import com.techlabs.service.ContactService;
 import com.techlabs.utils.PagedResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/private/api")
@@ -25,9 +23,9 @@ public class ContactController {
         return new ResponseEntity<>(contactResponseDTO,HttpStatus.OK);
     }
     @DeleteMapping("/contacts/{id}")
-    ResponseEntity<ContactResponseDTO>deleteContact(@PathVariable("id")int id){
-        ContactResponseDTO contactResponseDTO=contactService.deleteContact(id);
-        return new ResponseEntity<>(contactResponseDTO,HttpStatus.OK);
+    ResponseEntity<HttpStatus>deleteContact(@PathVariable("id")int id){
+        contactService.deleteContact(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/contacts/{id}")
     ResponseEntity<ContactResponseDTO>getContactById(@PathVariable("id")int id){
@@ -35,8 +33,8 @@ public class ContactController {
         return new ResponseEntity<>(contactResponseDTO,HttpStatus.OK);
     }
     @PutMapping("/contacts/{id}")
-    ResponseEntity<ContactResponseDTO>updateContact(@PathVariable("id")int id){
-        ContactResponseDTO contactResponseDTO=contactService.updateContact(id);
+    ResponseEntity<ContactResponseDTO>updateContact(@PathVariable("id")int id,@RequestBody ContactDTO contactDTO){
+        ContactResponseDTO contactResponseDTO=contactService.updateContact(id,contactDTO);
         return new ResponseEntity<>(contactResponseDTO,HttpStatus.OK);
     }
     @GetMapping("/contacts")

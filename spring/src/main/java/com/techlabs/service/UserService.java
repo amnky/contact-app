@@ -1,4 +1,4 @@
-package com.techlabs.security;
+package com.techlabs.service;
 
 import com.techlabs.dto.UserDTO;
 import com.techlabs.dto.UserResponseDTO;
@@ -10,4 +10,6 @@ public interface UserService {
     UserResponseDTO getUserByID(int id);
 
     PagedResponse<UserResponseDTO> getAllUsers(int pageNo, int size, String sort, String sortBy, String sortDirection);
+
+    void deleteUserById(int id);
 }

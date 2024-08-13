@@ -2,7 +2,7 @@ package com.techlabs.controller;
 
 import com.techlabs.dto.ContactDetailsDTO;
 import com.techlabs.dto.ContactDetailsResponseDTO;
-import com.techlabs.security.ContactDetailsService;
+import com.techlabs.service.ContactDetailsService;
 import com.techlabs.utils.PagedResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +17,10 @@ public class ContactDetailsController {
     public ContactDetailsController(ContactDetailsService contactDetailsService) {
         this.contactDetailsService = contactDetailsService;
     }
-    @PostMapping("contacts/{cid}/details")
-    ResponseEntity<ContactDetailsResponseDTO>createContactDetails(@PathVariable("cid")int cid,
+    @PostMapping("contacts-details")
+    ResponseEntity<ContactDetailsResponseDTO>createContactDetails(
                                                                   @RequestBody ContactDetailsDTO contactDetailsDTO){
-        ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.createContactDetails(cid,contactDetailsDTO);
+        ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.createContactDetails(contactDetailsDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("contacts/{cid}/details")
@@ -33,19 +33,20 @@ public class ContactDetailsController {
         PagedResponse<ContactDetailsResponseDTO> contactDetailsResponseDTO=contactDetailsService.getContactDetails(cid,pageNo,size,sort,sortBy,sortDirection);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @GetMapping("/contact-details/{id}")
+    @GetMapping("/contact-details/{cid}")
     ResponseEntity<ContactDetailsResponseDTO>getContactDetailsById(@PathVariable("cid")int cid){
         ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.getContactDetailsById(cid);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @PutMapping("/contact-details/{id}")
-    ResponseEntity<ContactDetailsResponseDTO>updateContactDetailsById(@PathVariable("cid")int cid){
-        ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.updateContactDetailsById(cid);
+    @PutMapping("/contact-details/{cid}")
+    ResponseEntity<ContactDetailsResponseDTO>updateContactDetailsById(@PathVariable("cid")int cid,@RequestBody
+                                                                      ContactDetailsDTO contactDetailsDTO){
+        ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.updateContactDetailsById(cid,contactDetailsDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @DeleteMapping("/contact-details/{id}")
-    ResponseEntity<ContactDetailsResponseDTO>deleteContactDetailsById(@PathVariable("cid")int cid){
-        ContactDetailsResponseDTO contactDetailsResponseDTO=contactDetailsService.deleteContactDetailsById(cid);
+    @DeleteMapping("/contact-details/{cid}")
+    ResponseEntity<HttpStatus>deleteContactDetailsById(@PathVariable("cid")int cid){
+        contactDetailsService.deleteContactDetailsById(cid);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

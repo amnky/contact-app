@@ -2,7 +2,7 @@ package com.techlabs.controller;
 
 import com.techlabs.dto.UserDTO;
 import com.techlabs.dto.UserResponseDTO;
-import com.techlabs.security.UserService;
+import com.techlabs.service.UserService;
 import com.techlabs.utils.PagedResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +37,13 @@ public class UserController {
         PagedResponse<UserResponseDTO> userResponseDTO=userService.getAllUsers(pageNo,size,sort,sortBy,sortDirection);
         return new ResponseEntity<>(userResponseDTO,HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<HttpStatus>deleteUser(@PathVariable("id") int id){
+        userService.deleteUserById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 
 }
