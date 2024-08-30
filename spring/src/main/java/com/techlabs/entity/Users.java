@@ -1,8 +1,8 @@
 package com.techlabs.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.List;
 
@@ -10,6 +10,9 @@ import java.util.List;
 @Table(name="users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Users {
 
     @Id
@@ -17,7 +20,9 @@ public class Users {
     @Column(name="user_id")
     private int userId;
     @Column(name="first_name")
+    @NotNull(message = "firstname should not be null")
     private String firstName;
+    @NotNull(message = "lastname should not be null")
     @Column(name="last_name")
     private String lastName;
 
@@ -35,54 +40,6 @@ public class Users {
         this.lastName = lastName;
         this.isAdmin = isAdmin;
         this.isActive=isActive;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
-
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public List<Contacts> getContactsList() {
-        return contactsList;
-    }
-
-    public void setContactsList(List<Contacts> contactsList) {
-        this.contactsList = contactsList;
     }
 
     public void addContact(Contacts contacts){

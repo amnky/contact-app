@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/private/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -29,11 +29,11 @@ public class UserController {
     }
     @GetMapping
     ResponseEntity<PagedResponse<UserResponseDTO>> getAllUsers(
-                                                               @RequestParam(name="pageNo",defaultValue = "0") int pageNo,
-                                                               @RequestParam(name="size",defaultValue = "10") int size,
-                                                               @RequestParam(name="sort",defaultValue = "ASC") String sort,
-                                                               @RequestParam(name="sortBy",defaultValue = "transactionTime") String sortBy,
-                                                               @RequestParam(name="sortDirection",defaultValue = "ASC") String sortDirection){
+            @RequestParam(name="pageNo",defaultValue = "0") int pageNo,
+            @RequestParam(name="size",defaultValue = "10") int size,
+            @RequestParam(name="sort",defaultValue = "ASC") String sort,
+            @RequestParam(name="sortBy",defaultValue = "userId") String sortBy,
+            @RequestParam(name="sortDirection",defaultValue = "ASC") String sortDirection){
         PagedResponse<UserResponseDTO> userResponseDTO=userService.getAllUsers(pageNo,size,sort,sortBy,sortDirection);
         return new ResponseEntity<>(userResponseDTO,HttpStatus.OK);
     }

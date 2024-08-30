@@ -9,7 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContactDetailsResponseDTO {
-    private String email;
-    private long mobileNo;
+public class LoginResponseDTO {
+
+    private int customerId;
+
+    private String UserRole;
+
+    private String cookie;
+
 }

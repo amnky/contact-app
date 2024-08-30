@@ -4,6 +4,7 @@ import com.techlabs.dto.ContactDTO;
 import com.techlabs.dto.ContactResponseDTO;
 import com.techlabs.entity.Contacts;
 import com.techlabs.entity.Users;
+import com.techlabs.exception.ContactApiException;
 import com.techlabs.repository.ContactRepository;
 import com.techlabs.repository.UserRepository;
 import com.techlabs.utils.PagedResponse;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,8 +48,8 @@ public class ContactServiceImp implements ContactService{
     @Override
     public ContactResponseDTO getContactById(int id) {
 
-        Contacts contacts=contactRepository.findById(id).filter(Contacts::getIsActive).
-                orElseThrow(()->new NoSuchElementException("contact not found"));
+        Contacts contacts=contactRepository.findById(id).filter(Contacts::isActive).
+                orElseThrow(()->new ContactApiException(HttpStatus.NOT_FOUND,"contact not found"));
         return contactsToContactResponseDto(contacts);
     }
 
@@ -70,14 +72,17 @@ public class ContactServiceImp implements ContactService{
 
     @Override
     public ContactResponseDTO updateContact(int id, ContactDTO contactDTO) {
-        Contacts oldContacts=contactDtoToContact(contactDTO);
-        Contacts updatedContacts=contactRepository.save(oldContacts);
-        return contactsToContactResponseDto(updatedContacts);
+        Contacts contact=contactRepository.findById(id).
+                orElseThrow(()->new ContactApiException(HttpStatus.NOT_FOUND,"contact not found"));
+        contact.setFirstName(contactDTO.getFirstName());
+        contact.setLastName(contactDTO.getLastName());
+        contact=contactRepository.save(contact);
+        return contactsToContactResponseDto(contact);
     }
 
     private ContactResponseDTO contactsToContactResponseDto(Contacts contacts) {
         return new ContactResponseDTO(contacts.getContactId(),contacts.getFirstName(),
-                contacts.getLastName(),contacts.getIsActive());
+                contacts.getLastName(),contacts.isActive());
     }
 
     private Contacts contactDtoToContact(ContactDTO contactDTO,Users users) {

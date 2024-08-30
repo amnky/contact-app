@@ -4,6 +4,8 @@ import com.techlabs.dto.ContactDetailsDTO;
 import com.techlabs.dto.ContactDetailsResponseDTO;
 import com.techlabs.entity.ContactDetails;
 import com.techlabs.entity.Contacts;
+import com.techlabs.exception.ContactApiException;
+import com.techlabs.exception.ContactDetailsException;
 import com.techlabs.repository.ContactDetailsRepository;
 import com.techlabs.repository.ContactRepository;
 import com.techlabs.utils.PagedResponse;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,9 +35,13 @@ public class ContactDetailsServiceImp implements ContactDetailsService{
     @Override
     public ContactDetailsResponseDTO createContactDetails(ContactDetailsDTO contactDetailsDTO) {
         Contacts contacts=contactRepository.findById(contactDetailsDTO.getContactId()).
-                filter(Contacts::getIsActive).orElseThrow(()-> new NoSuchElementException("contact not found"));
+                filter(Contacts::isActive).orElseThrow(()-> new ContactApiException(HttpStatus.NOT_FOUND,"contact not found"));
+
         ContactDetails contactDetails=contactDetailsDtoToContactDetails(contactDetailsDTO,contacts);
+        contactDetails.setContacts(contacts);
         contactDetails=contactDetailsRepository.save(contactDetails);
+        contacts.addContactDetails(contactDetails);
+        contactRepository.save(contacts);
         return contactDetailsToResponseDto(contactDetails);
     }
 
@@ -45,8 +52,9 @@ public class ContactDetailsServiceImp implements ContactDetailsService{
         Sort sorting = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNo, size,sorting);
-        Contacts contacts=contactRepository.findById(cid).orElseThrow(()->new NoSuchElementException("contact not found"));
+        Pageable pageable = PageRequest.of(pageNo, size);
+        Contacts contacts=contactRepository.findById(cid).
+                orElseThrow(()->new ContactApiException(HttpStatus.NOT_FOUND,"contact not found"));
         Page<ContactDetails> contactDetailsPage = contactDetailsRepository.findByContacts(contacts,pageable);
         List<ContactDetails> contactDetailsList = contactDetailsPage.getContent();
         List<ContactDetailsResponseDTO> contactDetailListToResponseDto = contactDetailListToResponseDto(contactDetailsList);
@@ -66,14 +74,15 @@ public class ContactDetailsServiceImp implements ContactDetailsService{
     @Override
     public ContactDetailsResponseDTO getContactDetailsById(int cid) {
         ContactDetails contactDetails=contactDetailsRepository.findById(cid).orElseThrow(()->
-                new NoSuchElementException("contact details not found"));
-        return contactDetailsToResponseDto(contactDetails);
+                new ContactDetailsException("contact details not found"));
+        ContactDetailsResponseDTO contactDetailsResponseDTO= contactDetailsToResponseDto(contactDetails);
+        return  contactDetailsResponseDTO;
     }
 
     @Override
     public ContactDetailsResponseDTO updateContactDetailsById(int cid, ContactDetailsDTO contactDetailsDTO) {
         ContactDetails contactDetails=contactDetailsRepository.findById(cid).orElseThrow(()->
-                new NoSuchElementException("contact details not found"));
+                new ContactDetailsException("contact details not found"));
         contactDetails.setEmail(contactDetailsDTO.getEmail());
         contactDetails.setMobileNo(contactDetails.getMobileNo());
         contactDetails=contactDetailsRepository.save(contactDetails);
